@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DemonHacks</title>
+        
+        <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQiixTj0oF8Y1wWD3wY95IJKsSozS1hxo&callback=initMap"async defer></script>
+        <!--<script type="text/javascript" src="scfsript.js"></script>-->
+        <link rel="stylesheet" href="account.css" type="text/css" /><link rel="stylesheet" href="index.css" type="text/css" /> <link rel="stylesheet" href="index.css" type="text/css" />
+   
+    </head>
+    <body>
+        <form action="/filter" method="POST">
+        <div class="left">
+    		<div class = 'user'>
+    			<img src="schedule.png" width="100px" height="100px">
+    		</div>
+    
+    		<div class="filter">
+    			<h1>Filter: </h1>
+    			<p class="title" >Distance: <div class="note"><p id="demo">50 mi</p> </div></p><!--5 miles is get according to javascript-->
+    			<p><input type="range" name="radius"  id="myRange" min="1" max="100" value="50"></p>
+    			<p class="title">Category:</p>
+    			<table> <!-- when select specific category, background change to #6795e0-->
+    				<tr>
+    					<td><button type>food</button></td>
+    					<td><button>sightseeing</button></td>
+    				</tr>
+    				<tr>
+    					<td><button>activity</button></td>
+    					<td><button>stores</button></td>
+    				</tr>
+    			</table>
+    				<p class="title">Most Popular:<div class="note"><5</div></p>
+    				<p><input type="range" min="1" max="100" value="10"></p>
+    				<br><button type="submit">Filter</button>
+    		</div>
+	    </div>
+        </form>
+        <div id="map"></div>
+        <!--<input type="button" onclick="newSpot()" value="Click Me!">-->
+    <script>
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+
+slider.oninput = function() {
+    output.innerHTML = this.value + ' mi';
+}
+        
+function initMap() {
+        var infoWindow;
+        var center;
+        var centerLat;
+        var centerLng;
+         infoWindow = new google.maps.InfoWindow;
+          
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var centerLat = position.coords.latitude;
+            var centerLng = position.coords.longitude;
+            });
+            
+          //Unfortunately this is asynchromous  
+          //So the map needs to be created AFTER
+          //The geolocation returns the coordinates
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: {lat: 41.878349199999995, lng: -87.62561339999999}
+        });
+        
+       
+
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        var rows = <%-JSON.stringify(locations)%>;
+        var locations = []
+        for(i=0; i< rows.length; i++) {
+            var loopLat = rows[i].location.coordinates[1];
+            console.log(loopLat);
+            var loopLng = rows[i].location.coordinates[0];
+            console.log(i + ": " + loopLat + ", " + loopLng);
+            var loopCoord = {lat: loopLat, lng: loopLng}
+            locations.push(loopCoord);
+        }
+        
+        // {username: "", text: "", location: {lng: -100.00, lat: 100.00}}
+        var markers = rows.map(function(point, i) {
+          var lat = point.location.coordinates[1];
+          var lng = point.location.coordinates[0];
+          var infowindow = new google.maps.InfoWindow({
+            content: point.text
+          });
+        //   console.log(point.username);
+        //   console.log(point.text);
+          var marker =  new google.maps.Marker({
+            position: {lat, lng},
+            title: point.username,
+            label: labels[i % labels.length]
+          });
+          marker.addListener('click', function() {infowindow.open(map, marker);});
+          return marker;
+          //;.addListener('click', function() {alert("!")});
+        });
+        //marker.addListener('click', function() {infowindow.open(map, marker); });
+
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+      
+      
+// locations is the database collection passed in from the HTTP request in server.js
+        console.log("lorem ipsum");
+
+        
+        var uluru = {lat: -25.344, lng: 131.036};
+        //Modify this to take in the user's realtime locatin with geolocation API
+        
+        // map = new google.maps.Map(document.getElementById('map'), {
+        //       center: uluru,
+        //       zoom: 8
+        //     });
+        
+      
+      
+      
+
+        
+        
+        
+    </script>
+    <ul>
+          
+            
+        </ul>
+    </body>
+</html>
